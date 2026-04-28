@@ -1,0 +1,36 @@
+spring:
+  kafka:
+    bootstrap-servers: localhost:9092   # Kafka broker address (where producer sends messages)
+
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      # Serializes the message key (used for partitioning + ordering)
+
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      # Converts Java object → JSON before sending to Kafka
+
+      properties:
+
+        spring.json.add.type.headers: false
+        # Disables adding Java class info in headers (avoids consumer class mismatch issues)
+
+        acks: all
+        # Wait for all replicas to acknowledge → ensures message durability (no data loss on single broker failure)
+
+        retries: 2147483647
+        # Retry sending message on failure (max int = effectively infinite retries)
+
+        enable.idempotence: true
+        # Prevents duplicate messages during retries (ensures exactly-once on producer side)
+
+        max.in.flight.requests.per.connection: 5
+        # Limits unacknowledged requests → required for safe retries with idempotence
+
+        delivery.timeout.ms: 120000
+        # Total time to try sending a message before failing (includes retries)
+
+        linger.ms: 5
+        # Waits a few ms to batch messages → improves throughput
+
+        batch.size: 16384
+        # Max batch size (in bytes) → larger batch = better performance, but slight latency increase

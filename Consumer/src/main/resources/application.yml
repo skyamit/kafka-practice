@@ -1,0 +1,27 @@
+spring:
+  kafka:
+    bootstrap-servers: localhost:9092   # Kafka broker
+
+    consumer:
+      group-id: order-group             # Consumer group for load balancing
+
+      auto-offset-reset: earliest       # Start from beginning if no offset
+
+      enable-auto-commit: false         # Prevent data loss (manual control of offset)
+
+      key-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      # Wrap deserializers to safely handle errors
+
+      properties:
+        spring.deserializer.key.delegate.class: org.apache.kafka.common.serialization.StringDeserializer
+        # Actual key deserializer
+
+        spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JsonDeserializer
+        # Actual value deserializer
+
+        spring.json.trusted.packages: "*"
+        # Allow JSON conversion
+
+        spring.json.value.default.type: com.amit_codes.Consumer.entity.OrderEvent
+        # Required since type headers are disabled in producer
