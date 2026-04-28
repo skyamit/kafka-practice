@@ -55,7 +55,7 @@ public class OrderEvent {
 }
 ```
 
-##4. Docker Setup
+## 4. Docker Setup
 ```
 docker-compose.yml
 version: '3'
